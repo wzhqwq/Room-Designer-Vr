@@ -1,0 +1,3 @@
+# TODO
+
+1. 利用代码手动设定CardBoard的参数，传入的地址为：https://google.com/cardboard/cfg?p=CgZHb29nbGUSEkNhcmRib2FyZCBJL08gMjAxNR2ZuxY9JbbzfT0qEAAASEIAAEhCAABIQgAASEJYADUpXA89OgiCc4Y-MCqJPlAAYAM
