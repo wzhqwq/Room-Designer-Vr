@@ -45,6 +45,14 @@ public class PlayerController : MonoBehaviour
     transform.position = position;
   }
 
+  void OnCollisionEnter(Collision collision)
+  {
+    if (collision.gameObject.tag == "Operable")
+    {
+      mode = PlayerMode.Correction;
+    }
+  }
+
   public static void UpdatePlayerPosition(float x, float z)
   {
     activePlayer.UpdatePosition(x, z);

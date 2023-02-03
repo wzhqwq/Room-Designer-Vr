@@ -1,15 +1,17 @@
 using UnityEngine;
 using System.Collections;
 
-public class ConfirmController : MonoBehaviour {
+public class ConfirmController : OperableController {
+  override public void OnPointerEnter()
+  {
 
-    // Use this for initialization
-    void Start () {
-    
-    }
-    
-    // Update is called once per frame
-    void Update () {
-    
-    }
+  }
+  override public void OnPointerExit()
+  {
+
+  }
+  override public void OnPointerClick()
+  {
+
+  }
 }

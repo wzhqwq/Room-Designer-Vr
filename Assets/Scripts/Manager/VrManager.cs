@@ -23,6 +23,11 @@ public class VrManager : MonoBehaviour
       Application.Quit();
     }
 
+    if (Api.IsGearButtonPressed)
+    {
+      Api.ScanDeviceParams();
+    }
+
     if (Api.IsTriggerHeldPressed)
     {
       Api.Recenter();

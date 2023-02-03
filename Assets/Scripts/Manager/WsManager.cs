@@ -111,7 +111,7 @@ public class WsManager : Singleton<WsManager>
 
   private void OnOpen()
   {
-    SceneTransitionManager.GetInstance().LoadScene("CorrectionScene");
+    SceneTransitionManager.GetInstance().LoadScene("RoomScene");
   }
 
   public void Mark(string id)

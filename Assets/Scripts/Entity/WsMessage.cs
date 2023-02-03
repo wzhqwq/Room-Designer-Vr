@@ -56,13 +56,12 @@ public class AddFurnitureMessage
   public string type = "addFurniture";
   public Furniture data;
 
-  public static AddFurnitureMessage Create(string id, string model, string material)
+  public static AddFurnitureMessage Create(string id, string model, string x, string z, string angle)
   {
     AddFurnitureMessage message = new AddFurnitureMessage();
     message.data = new Furniture();
     message.data.id = id;
     message.data.model = model;
-    message.data.material = material;
     return message;
   }
 }

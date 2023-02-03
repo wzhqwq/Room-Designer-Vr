@@ -12,7 +12,9 @@ public struct Furniture
 {
   public string id;
   public string model;
-  public string material;
+  public string x;
+  public string z;
+  public string angle;
 }
 
 [Serializable]

@@ -21,11 +21,19 @@ public class CameraController : MonoBehaviour
     if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
     {
       // 指针指向了新的物体
-      if (_gazedAtObject != hit.transform.gameObject && hit.transform.gameObject.tag == "Operable")
+      GameObject hitObject = hit.transform.parent.gameObject;
+      if (_gazedAtObject != hitObject)
       {
         _gazedAtObject?.SendMessage("OnPointerExit");
-        _gazedAtObject = hit.transform.gameObject;
-        _gazedAtObject.SendMessage("OnPointerEnter");
+        if (hitObject.tag == "Operable")
+        {
+          _gazedAtObject = hitObject;
+          _gazedAtObject.SendMessage("OnPointerEnter");
+        }
+        else
+        {
+          _gazedAtObject = null;
+        }
       }
     }
     else
@@ -38,7 +46,14 @@ public class CameraController : MonoBehaviour
     // 点击检测
     if (Google.XR.Cardboard.Api.IsTriggerPressed)
     {
-      _gazedAtObject?.SendMessage("OnPointerClick");
+      if (_gazedAtObject != null)
+      {
+        _gazedAtObject.SendMessage("OnPointerClick");
+      }
+      else
+      {
+        RoomScene.UnselectFurniture();
+      }
     }
   }
 }
