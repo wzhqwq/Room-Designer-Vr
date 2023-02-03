@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using WebSocketSharp;
-using System.Timers;
+using System.Collections;
 using System.Collections.Concurrent;
 
 public class WsManager : Singleton<WsManager>
@@ -27,7 +26,7 @@ public class WsManager : Singleton<WsManager>
           OnError();
           break;
         case "CLOSED":
-          OnClose();
+          StartCoroutine(OnClose());
           break;
         default:
           OnMessage(message);
@@ -98,24 +97,10 @@ public class WsManager : Singleton<WsManager>
     }
   }
 
-  private void OnClose()
+  private IEnumerator OnClose()
   {
-    if (SceneManager.GetActiveScene().name != "StartUpScene")
-    {
-      try {
-        SceneManager.LoadScene("StartUpScene");
-      }
-      catch (System.Exception e) {
-        Debug.LogError(e);
-      }
-    }
-    Timer timeout = new Timer(1000);
-    timeout.AutoReset = false;
-    timeout.Enabled = true;
-    timeout.Elapsed += (s, e) =>
-    {
-      ws = null;
-    };
+    yield return SceneTransitionManager.GetInstance().LoadSceneCoroutine("StartUpScene");
+    ws = null;
   }
 
   private void OnError()
@@ -126,7 +111,7 @@ public class WsManager : Singleton<WsManager>
 
   private void OnOpen()
   {
-      SceneManager.LoadScene("CorrectionScene");
+    SceneTransitionManager.GetInstance().LoadScene("CorrectionScene");
   }
 
   public void Mark(string id)
