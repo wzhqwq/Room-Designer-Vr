@@ -4,7 +4,7 @@ Shader "Unlit/SelectionBox" {
     Properties {
         _MainColor("Main Color", Color) = (1, 1, 1, 1)
         _Thickness("Lines Thickness", Range(0.01, 0.05)) = 0.01
-        _Size("Corner Size", Range(0.01, 0.1)) = 0.02
+        _Size("Corner Size", Range(0.05, 0.5)) = 0.1
     }
     SubShader {
         Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
@@ -12,6 +12,7 @@ Shader "Unlit/SelectionBox" {
 
         Pass {
             ZWrite Off
+            Cull Off
             Blend SrcAlpha OneMinusSrcAlpha
 
             CGPROGRAM
@@ -45,13 +46,14 @@ Shader "Unlit/SelectionBox" {
                 fixed4 color;
                 color = _MainColor;
                 color.a = _MainColor.a * 0.1;
+                float sizeNow = _Size + sin(_Time.y * 4) * 0.02;
                 if ((i.texcoord0.x < _Thickness || i.texcoord0.x > 1.0 - _Thickness)) {
-                    if (i.texcoord0.y < _Size || i.texcoord0.y > 1.0 - _Size) {
+                    if (i.texcoord0.y < sizeNow || i.texcoord0.y > 1.0 - sizeNow) {
                         color.a = _MainColor.a;
                     }
                 }
                 if ((i.texcoord0.y < _Thickness || i.texcoord0.y > 1.0 - _Thickness)) {
-                    if (i.texcoord0.x < _Size || i.texcoord0.x > 1.0 - _Size) {
+                    if (i.texcoord0.x < sizeNow || i.texcoord0.x > 1.0 - sizeNow) {
                         color.a = _MainColor.a;
                     }
                 }

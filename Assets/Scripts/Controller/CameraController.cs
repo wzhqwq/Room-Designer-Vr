@@ -20,20 +20,20 @@ public class CameraController : MonoBehaviour
     RaycastHit hit;
     if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
     {
-      // 指针指向了新的物体
       GameObject hitObject = hit.transform.parent.gameObject;
-      if (_gazedAtObject != hitObject)
+      if (hitObject.tag == "Operable")
       {
-        _gazedAtObject?.SendMessage("OnPointerExit");
-        if (hitObject.tag == "Operable")
+        if (_gazedAtObject != hitObject)
         {
+          _gazedAtObject?.SendMessage("OnPointerExit");
           _gazedAtObject = hitObject;
           _gazedAtObject.SendMessage("OnPointerEnter");
         }
-        else
-        {
-          _gazedAtObject = null;
-        }
+      }
+      else
+      {
+        _gazedAtObject?.SendMessage("OnPointerExit");
+        _gazedAtObject = null;
       }
     }
     else

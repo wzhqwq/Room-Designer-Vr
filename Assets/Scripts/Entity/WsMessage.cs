@@ -12,6 +12,7 @@ public class MessageType
   public const string FURNITURE_LIST = "listAllFurniture";
   public const string ADD_FURNITURE = "addFurniture";
   public const string DELETE_FURNITURE = "deleteFurniture";
+  public const string UPDATE_FURNITURE = "updateFurniture";
   public const string MARK_FURNITURE = "markFurniture";
   public const string UNMARK_FURNITURE = "unmarkFurniture";
 }
@@ -77,6 +78,22 @@ public class DeleteFurnitureMessage
     DeleteFurnitureMessage message = new DeleteFurnitureMessage();
     message.data = new JustId();
     message.data.id = id;
+    return message;
+  }
+}
+
+[Serializable]
+public class UpdateFurnitureMessage
+{
+  public string type = "updateFurniture";
+  public Furniture data;
+
+  public static UpdateFurnitureMessage Create(string id, string model, string x, string z, string angle)
+  {
+    UpdateFurnitureMessage message = new UpdateFurnitureMessage();
+    message.data = new Furniture();
+    message.data.id = id;
+    message.data.model = model;
     return message;
   }
 }

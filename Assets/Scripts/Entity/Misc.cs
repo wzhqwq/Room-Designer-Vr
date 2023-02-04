@@ -3,8 +3,8 @@ using System;
 [Serializable]
 public struct Position
 {
-  public string x;
-  public string z;
+  public float x;
+  public float z;
 }
 
 [Serializable]
@@ -12,9 +12,10 @@ public struct Furniture
 {
   public string id;
   public string model;
-  public string x;
-  public string z;
-  public string angle;
+  public float x;
+  public float z;
+  public float rotation;
+  public bool marked;
 }
 
 [Serializable]
