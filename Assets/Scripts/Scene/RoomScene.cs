@@ -50,7 +50,7 @@ public class RoomScene : MonoBehaviour
     {
       Bounds bounds = collider.bounds;
       selection.transform.localScale = bounds.size;
-      selection.transform.localPosition = new Vector3(0, bounds.size.y / 2, 0);
+      selection.transform.localPosition = new Vector3(0, bounds.size.y / 2 + 0.01f, 0);
     }
 
     return wrapper;
