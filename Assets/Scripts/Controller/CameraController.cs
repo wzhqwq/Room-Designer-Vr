@@ -7,6 +7,8 @@ public class CameraController : MonoBehaviour
   private GameObject _gazedAtObject = null;
   private bool FOVSet = false;
 
+  private IEnumerator gazeTimer = null;
+
   public void Start() {
     PlayerController.UpdatePlayer();
   }
@@ -25,22 +27,40 @@ public class CameraController : MonoBehaviour
       {
         if (_gazedAtObject != hitObject)
         {
-          _gazedAtObject?.SendMessage("OnPointerExit");
+          if (_gazedAtObject != null)
+          {
+            _gazedAtObject.SendMessage("OnPointerExit");
+          }
           _gazedAtObject = hitObject;
           _gazedAtObject.SendMessage("OnPointerEnter");
+
+          gazeTimer = StartGazeTimer(_gazedAtObject);
+          StartCoroutine(gazeTimer);
         }
       }
       else
       {
-        _gazedAtObject?.SendMessage("OnPointerExit");
-        _gazedAtObject = null;
+        if (_gazedAtObject != null)
+        {
+          _gazedAtObject.SendMessage("OnPointerExit");
+          _gazedAtObject = null;
+          if (gazeTimer != null)
+          {
+            StopCoroutine(gazeTimer);
+            gazeTimer = null;
+          }
+        }
       }
     }
     else
     {
-      // 啥都没看
       _gazedAtObject?.SendMessage("OnPointerExit");
       _gazedAtObject = null;
+      if (gazeTimer != null)
+      {
+        StopCoroutine(gazeTimer);
+        gazeTimer = null;
+      }
     }
 
     // 点击检测
@@ -55,5 +75,11 @@ public class CameraController : MonoBehaviour
         RoomScene.UnselectFurniture();
       }
     }
+  }
+
+  private IEnumerator StartGazeTimer(GameObject gameObject)
+  {
+    yield return new WaitForSeconds(3);
+    gameObject.SendMessage("OnPointerClick");
   }
 }

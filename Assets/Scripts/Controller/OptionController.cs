@@ -5,16 +5,22 @@ using TMPro;
 
 public class OptionController : OperableController {
   private MeshRenderer backgroundRenderer;
-  private TextMeshProUGUI labelGUI;
+  private TMP_Text labelText;
   public EventHandler OnClick;
 
   void Awake()
   {
     gameObject.tag = "Operable";
-    backgroundRenderer = transform.Find("Background").GetComponent<MeshRenderer>();
+    Transform offset = transform.GetChild(0);
+    backgroundRenderer = offset.Find("Background").GetComponent<MeshRenderer>();
     backgroundRenderer.material = ResourceManager.optionUnselectedMaterial;
-    labelGUI = transform.Find("Label").GetComponent<TextMeshProUGUI>();
-    labelGUI.font = ResourceManager.blueFont;
+    labelText = offset.Find("Label").GetComponent<TMP_Text>();
+    labelText.font = ResourceManager.blueFont;
+  }
+
+  void Start()
+  {
+    Show();
   }
 
   void Update()
@@ -24,23 +30,22 @@ public class OptionController : OperableController {
   
   public void SetRadius(float radius)
   {
-    transform.GetChild(0).localPosition = new Vector3(0, 0, radius);
-    transform.GetChild(1).localPosition = new Vector3(0, 0, radius + -0.01f);
+    transform.GetChild(0).localPosition = new Vector3(-radius, 0, radius);
   }
   public void SetLabel(string label)
   {
-    labelGUI.text = label;
+    labelText.text = label;
   }
 
   override public void OnPointerEnter()
   {
     backgroundRenderer.material = ResourceManager.optionSelectedMaterial;
-    labelGUI.font = ResourceManager.whiteFont;
+    labelText.font = ResourceManager.whiteFont;
   }
   override public void OnPointerExit()
   {
     backgroundRenderer.material = ResourceManager.optionUnselectedMaterial;
-    labelGUI.font = ResourceManager.blueFont;
+    labelText.font = ResourceManager.blueFont;
   }
   override public void OnPointerClick()
   {

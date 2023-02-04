@@ -95,9 +95,11 @@ public class RoomScene : MonoBehaviour
 
   public static void SelectFurniture(GameObject furniture)
   {
+    ClearOptions();
     activeInstance.selectedFurniture?.GetComponent<FurnitureController>().Unselect();
     activeInstance.selectedFurniture = furniture;
     furniture.GetComponent<FurnitureController>().Select();
+    ShowOptions(furniture);
   }
   public static void UnselectFurniture()
   {
@@ -119,7 +121,11 @@ public class RoomScene : MonoBehaviour
 
   private static void ShowOptions(GameObject target)
   {
-    float top = target.transform.Find("Selection").localScale.y / 2 + 0.5f;
+    float top = target.transform.Find("Selection").localScale.y + 0.1f;
+    float radius = Mathf.Max(
+      target.transform.Find("Selection").localScale.x,
+      target.transform.Find("Selection").localScale.z
+    ) * Mathf.Sqrt(2) / 2;
     bool marked = target.GetComponent<FurnitureController>().IsMarked();
 
     GameObject optionMark = Instantiate(ResourceManager.optionPrefab);
@@ -128,7 +134,7 @@ public class RoomScene : MonoBehaviour
     optionMark.AddComponent<OptionController>();
 
     OptionController markController = optionMark.GetComponent<OptionController>();
-    markController.SetRadius(target.transform.Find("Selection").localScale.x / 2 * Mathf.Sqrt(2) + 0.5f);
+    markController.SetRadius(radius);
     markController.SetLabel(marked ? "去除标记" : "标记");
     markController.OnClick = (s, e) =>
     {
