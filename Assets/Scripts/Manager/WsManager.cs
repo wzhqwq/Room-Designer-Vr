@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WebSocketSharp;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Threading;
 
 public class WsManager : Singleton<WsManager>
 {
@@ -65,7 +67,13 @@ public class WsManager : Singleton<WsManager>
       Debug.Log("WebSocket Close");
       messageQueue.Enqueue("CLOSED");
     };
-    ws.Connect();
+    // WebSocketSharp会不负责任地在当前线程建立TCP连接，如果连不上服务器，会卡死主线程
+    // 所以这里用一个新线程来建立连接
+    Thread thread = new Thread(() =>
+    {
+      ws.Connect();
+    });
+    thread.Start();
   }
 
   private void OnMessage(string message)
@@ -106,7 +114,10 @@ public class WsManager : Singleton<WsManager>
 
   private IEnumerator OnClose()
   {
-    yield return SceneTransitionManager.GetInstance().LoadSceneCoroutine("StartUpScene");
+    if (SceneManager.GetActiveScene().name != "StartUpScene")
+      yield return SceneTransitionManager.GetInstance().LoadSceneCoroutine("StartUpScene");
+    else
+      yield return new WaitForSeconds(1);
     ws = null;
   }
 

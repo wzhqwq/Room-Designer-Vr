@@ -7,6 +7,7 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager> {
   void Start()
   {
     transitionCoroutine = FadeController.FadeInCoroutine();
+    StartCoroutine(transitionCoroutine);
   }
 
   public void LoadScene(string sceneName) {

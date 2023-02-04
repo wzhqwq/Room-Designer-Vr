@@ -22,13 +22,6 @@ public class RoomScene : MonoBehaviour
 
   void Start()
   {
-    Furniture furniture = new Furniture();
-    furniture.id = "1";
-    furniture.model = "chair_1";
-    furniture.x = 0;
-    furniture.z = 4;
-    furniture.rotation = 0;
-    AddFurniture(furniture);
     WsManager.GetInstance().ListFurniture();
   }
 
@@ -79,7 +72,7 @@ public class RoomScene : MonoBehaviour
   {
     GameObject furniture = activeInstance.furnitureDic[id];
     if (furniture == null) return;
-    
+
     if (furniture == activeInstance.selectedFurniture)
       UnselectFurniture();
     activeInstance.furnitureDic.Remove(id);

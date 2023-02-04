@@ -25,7 +25,6 @@ public class FadeController : MonoBehaviour
 
   private static IEnumerator FadeCoroutine(float cosinePhase)
   {
-    Debug.Log("Fade Begin: " + cosinePhase);
     float timer = 0.0f;
     while (timer < fadeTime)
     {
@@ -35,6 +34,5 @@ public class FadeController : MonoBehaviour
       timer += Time.deltaTime;
       yield return null;
     }
-    Debug.Log("Fade End");
   }
 }
