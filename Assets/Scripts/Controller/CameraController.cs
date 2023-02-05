@@ -8,78 +8,102 @@ public class CameraController : MonoBehaviour
   private bool FOVSet = false;
 
   private IEnumerator gazeTimer = null;
+  private MeshRenderer indicatorRenderer;
 
-  public void Start() {
+  void Awake() {
+    indicatorRenderer = GameObject.Find("Indicator").GetComponent<MeshRenderer>();
+  }
+
+  void Start() {
     PlayerController.UpdatePlayer();
   }
 
-  public void Update()
+  void Update()
   {
     if (!FOVSet && DeepLinkManager.GetInstance().FOV != 0) {
       Camera.main.fieldOfView = DeepLinkManager.GetInstance().FOV;
       FOVSet = true;
     }
-    RaycastHit hit;
-    if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
+    GameObject hitObject;
+    if (TryHit(out hitObject))
     {
-      GameObject hitObject = hit.transform.parent.gameObject;
-      if (hitObject.tag == "Operable")
-      {
-        if (_gazedAtObject != hitObject)
-        {
-          if (_gazedAtObject != null)
-          {
-            _gazedAtObject.SendMessage("OnPointerExit");
-          }
-          _gazedAtObject = hitObject;
-          _gazedAtObject.SendMessage("OnPointerEnter");
-
-          gazeTimer = StartGazeTimer(_gazedAtObject);
-          StartCoroutine(gazeTimer);
-        }
-      }
-      else
+      Debug.Log(hitObject.name);
+      if (_gazedAtObject != hitObject)
       {
         if (_gazedAtObject != null)
-        {
           _gazedAtObject.SendMessage("OnPointerExit");
-          _gazedAtObject = null;
-          if (gazeTimer != null)
-          {
-            StopCoroutine(gazeTimer);
-            gazeTimer = null;
-          }
-        }
+        _gazedAtObject = hitObject;
+        _gazedAtObject.SendMessage("OnPointerEnter");
+
+        StopGazeTimer();
+      }
+      if (gazeTimer == null)
+      {
+        gazeTimer = StartGazeTimer(_gazedAtObject);
+        StartCoroutine(gazeTimer);
       }
     }
     else
-    {
-      _gazedAtObject?.SendMessage("OnPointerExit");
-      _gazedAtObject = null;
-      if (gazeTimer != null)
-      {
-        StopCoroutine(gazeTimer);
-        gazeTimer = null;
-      }
-    }
+      PointerExit();
 
     // 点击检测
     if (Google.XR.Cardboard.Api.IsTriggerPressed)
     {
+      StopGazeTimer();
       if (_gazedAtObject != null)
-      {
         _gazedAtObject.SendMessage("OnPointerClick");
-      }
       else
-      {
         RoomScene.UnselectFurniture();
-      }
     }
+  }
+
+  private bool TryHit(out GameObject hitObject)
+  {
+    RaycastHit hit;
+    if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
+    {
+      hitObject = hit.transform.parent.gameObject;
+      return hitObject.tag == "Operable";
+    }
+    else
+    {
+      hitObject = null;
+      return false;
+    }
+  }
+
+  private void PointerExit()
+  {
+    if (_gazedAtObject == null) return;
+
+    _gazedAtObject.SendMessage("OnPointerExit");
+    _gazedAtObject = null;
+
+    StopGazeTimer();
   }
 
   private IEnumerator StartGazeTimer(GameObject gameObject)
   {
-    yield return new WaitForSeconds(3);
+    if (gameObject == null) yield break;
+
+    float timer = 0;
+    while (timer < 3)
+    {
+      timer += Time.deltaTime;
+      indicatorRenderer.material.Lerp(ResourceManager.indicatorNormal, ResourceManager.indicatorActive, timer / 3);
+      yield return null;
+    }
+
     gameObject.SendMessage("OnPointerClick");
+    indicatorRenderer.material = ResourceManager.indicatorNormal;
+    gazeTimer = null;
+  }
+  private void StopGazeTimer()
+  {
+    if (gazeTimer == null) return;
+
+    StopCoroutine(gazeTimer);
+    gazeTimer = null;
+    indicatorRenderer.material = ResourceManager.indicatorNormal;
   }
 }

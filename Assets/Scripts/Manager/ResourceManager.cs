@@ -9,6 +9,8 @@ public class ResourceManager : Singleton<ResourceManager>
   public static Material focusedMaterial;
   public static Material optionUnselectedMaterial;
   public static Material optionSelectedMaterial;
+  public static Material indicatorNormal;
+  public static Material indicatorActive;
   public static TMP_FontAsset whiteFont;
   public static TMP_FontAsset blueFont;
   public static GameObject optionPrefab;
@@ -21,6 +23,8 @@ public class ResourceManager : Singleton<ResourceManager>
     focusedMaterial = Resources.Load<Material>("Materials/Focused");
     optionUnselectedMaterial = Resources.Load<Material>("Materials/OptionUnselected");
     optionSelectedMaterial = Resources.Load<Material>("Materials/OptionSelected");
+    indicatorNormal = Resources.Load<Material>("Materials/IndicatorNormal");
+    indicatorActive = Resources.Load<Material>("Materials/IndicatorActive");
     whiteFont = Resources.Load<TMP_FontAsset>("Fonts/Font White");
     blueFont = Resources.Load<TMP_FontAsset>("Fonts/Font Blue");
     optionPrefab = Resources.Load<GameObject>("Prefabs/Option");
