@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public enum PlayerMode
 {
   Steady,
@@ -10,10 +11,20 @@ public enum PlayerMode
 public class PlayerController : MonoBehaviour
 {
   private static PlayerController activePlayer;
-  private Vector2 firstPosition;
+  private static float correctionAngle = 0.0f;
+  private Vector2? startingPoint;
 
   [SerializeField]
   private PlayerMode mode = PlayerMode.Steady;
+
+  void Awake()
+  {
+    if (mode == PlayerMode.Free)
+    {
+      // 通过Camera Offset矫正相机角度
+      activePlayer.transform.GetChild(0).rotation = Quaternion.Euler(0, correctionAngle, 0);
+    }
+  }
 
   public static void UpdatePlayer()
   {
@@ -28,13 +39,14 @@ public class PlayerController : MonoBehaviour
       case PlayerMode.Steady:
         return;
       case PlayerMode.Correction:
-        if (firstPosition == null)
+        if (startingPoint == null)
         {
-          firstPosition = new Vector2(x, z);
+          startingPoint = new Vector2(x, z);
         }
         else {
-          float length = (firstPosition - new Vector2(x, z)).magnitude;
+          float length = (startingPoint - new Vector2(x, z))?.magnitude ?? 0;
           position.z = length;
+          correctionAngle = Mathf.Atan2(z - startingPoint.Value.y, x - startingPoint.Value.x) * Mathf.Rad2Deg;
         }
         break;
       case PlayerMode.Free:
@@ -47,21 +59,20 @@ public class PlayerController : MonoBehaviour
 
   void OnCollisionEnter(Collision collision)
   {
-    if (collision.gameObject.tag == "Operable")
-    {
-      mode = PlayerMode.Correction;
-    }
+    if (collision.gameObject.name == "Destination")
+      CorrectionScene.DestinationReached();
   }
 
   public static void UpdatePlayerPosition(float x, float z)
   {
     activePlayer.UpdatePosition(x, z);
   }
-  public static void SetCorrectionAngle(float angle)
+  public static void ClearStartingPoint()
   {
-    if (activePlayer != null)
-    {
-      activePlayer.transform.rotation = Quaternion.Euler(0, angle, 0);
-    }
+    activePlayer.startingPoint = null;
+  }
+  public static void StopCorrection()
+  {
+    activePlayer.mode = PlayerMode.Steady;
   }
 }

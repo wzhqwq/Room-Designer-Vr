@@ -25,6 +25,11 @@ public class RoomScene : MonoBehaviour
     WsManager.GetInstance().ListFurniture();
   }
 
+  public static bool IsAlive()
+  {
+    return activeInstance != null;
+  }
+
   public static void AddPrefab(string name)
   {
     GameObject prefab = Resources.Load<GameObject>("Furniture/Prefabs/" + name);

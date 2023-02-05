@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
     GameObject hitObject;
     if (TryHit(out hitObject))
     {
-      Debug.Log(hitObject.name);
+      // Debug.Log(hitObject.name);
       if (_gazedAtObject != hitObject)
       {
         if (_gazedAtObject != null)
@@ -49,6 +49,11 @@ public class CameraController : MonoBehaviour
     // 点击检测
     if (Google.XR.Cardboard.Api.IsTriggerPressed)
     {
+      if (CorrectionScene.IsAlive()) {
+        Google.XR.Cardboard.Api.Recenter();
+        PlayerController.ClearStartingPoint();
+        return;
+      }
       StopGazeTimer();
       if (_gazedAtObject != null)
         _gazedAtObject.SendMessage("OnPointerClick");
