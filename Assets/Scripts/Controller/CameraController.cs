@@ -94,7 +94,7 @@ public class CameraController : MonoBehaviour
       yield return null;
     }
 
-    gameObject.SendMessage("OnPointerClick");
+    if (gameObject != null) gameObject.SendMessage("OnPointerClick");
     indicatorRenderer.material = ResourceManager.indicatorNormal;
     gazeTimer = null;
   }
