@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
     activePlayer = FindObjectOfType<PlayerController>();
   }
 
-  public void UpdatePosition(float x, float z)
+  public void UpdateLocation(float x, float z)
   {
     Vector3 position = transform.position;
     switch (mode)
@@ -63,9 +63,9 @@ public class PlayerController : MonoBehaviour
       CorrectionScene.DestinationReached();
   }
 
-  public static void UpdatePlayerPosition(float x, float z)
+  public static void UpdatePlayerLocation(float x, float z)
   {
-    activePlayer.UpdatePosition(x, z);
+    activePlayer.UpdateLocation(x, z);
   }
   public static void ClearStartingPoint()
   {

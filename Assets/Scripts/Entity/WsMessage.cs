@@ -8,7 +8,7 @@ public struct GenericWsMessage
 
 public class MessageType
 {
-  public const string POSITION = "updatePosition";
+  public const string LOCATION = "updateLocation";
   public const string FURNITURE_LIST = "listAllFurniture";
   public const string ADD_FURNITURE = "addFurniture";
   public const string DELETE_FURNITURE = "deleteFurniture";
@@ -25,10 +25,10 @@ public struct OperationResultMessage
 }
 
 [Serializable]
-public struct PositionMessage
+public struct LocationMessage
 {
   public string type;
-  public Position data;
+  public Location data;
 }
 
 [Serializable]

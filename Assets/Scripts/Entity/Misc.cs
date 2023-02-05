@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public struct Position
+public struct Location
 {
   public float x;
   public float z;

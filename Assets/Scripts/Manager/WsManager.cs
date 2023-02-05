@@ -82,9 +82,9 @@ public class WsManager : Singleton<WsManager>
 
     switch (parsed.type)
     {
-      case MessageType.POSITION:
-        PositionMessage positionMessage = JsonUtility.FromJson<PositionMessage>(message);
-        PlayerController.UpdatePlayerPosition(positionMessage.data.x, positionMessage.data.z);
+      case MessageType.LOCATION:
+        LocationMessage locationMessage = JsonUtility.FromJson<LocationMessage>(message);
+        PlayerController.UpdatePlayerLocation(locationMessage.data.x, locationMessage.data.z);
         break;
       case MessageType.FURNITURE_LIST:
         FurnitureListMessage furnitureListMessage = JsonUtility.FromJson<FurnitureListMessage>(message);
