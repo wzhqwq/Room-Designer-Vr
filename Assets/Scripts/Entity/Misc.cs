@@ -10,7 +10,7 @@ public struct Location
 [Serializable]
 public struct Furniture
 {
-  public string id;
+  public int id;
   public string model;
   public float x;
   public float z;
@@ -21,5 +21,5 @@ public struct Furniture
 [Serializable]
 public struct JustId
 {
-  public string id;
+  public int id;
 }

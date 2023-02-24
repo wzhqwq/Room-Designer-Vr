@@ -5,8 +5,8 @@ using TMPro;
 public class RoomScene : MonoBehaviour
 {
   private static RoomScene activeInstance;
-  private static Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
-  private Dictionary<string, GameObject> furnitureDic = new Dictionary<string, GameObject>();
+  private static Dictionary<string, GameObject> prefabs = new();
+  private Dictionary<int, GameObject> furnitureDic = new();
 
   private GameObject selectedFurniture;
   private List<OptionController> shownOptions = new List<OptionController>();
@@ -73,7 +73,7 @@ public class RoomScene : MonoBehaviour
     child.GetComponent<FurnitureController>().UpdateFurniture(furniture);
     activeInstance.furnitureDic.Add(furniture.id, child);
   }
-  public static void RemoveFurniture(string id)
+  public static void RemoveFurniture(int id)
   {
     GameObject furniture = activeInstance.furnitureDic[id];
     if (furniture == null) return;
@@ -81,7 +81,7 @@ public class RoomScene : MonoBehaviour
     if (furniture == activeInstance.selectedFurniture)
       UnselectFurniture();
     activeInstance.furnitureDic.Remove(id);
-    Destroy(furniture);
+    furniture.GetComponent<FurnitureController>().OnRemove();
   }
   public static void ClearFurniture()
   {
@@ -116,12 +116,12 @@ public class RoomScene : MonoBehaviour
   public static void MarkSelected()
   {
     activeInstance.selectedFurniture?.GetComponent<FurnitureController>().Mark();
-    WsManager.GetInstance().Mark(activeInstance.selectedFurniture.name.Substring(2));
+    WsManager.GetInstance().Mark(int.Parse(activeInstance.selectedFurniture.name.Substring(2)));
   }
   public static void UnMarkSelected()
   {
     activeInstance.selectedFurniture?.GetComponent<FurnitureController>().UnMark();
-    WsManager.GetInstance().UnMark(activeInstance.selectedFurniture.name.Substring(2));
+    WsManager.GetInstance().UnMark(int.Parse(activeInstance.selectedFurniture.name.Substring(2)));
   }
 
   private static void ShowOptions(GameObject target)

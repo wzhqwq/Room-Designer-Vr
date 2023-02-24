@@ -57,7 +57,7 @@ public class AddFurnitureMessage
   public string type = "addFurniture";
   public Furniture data;
 
-  public static AddFurnitureMessage Create(string id, string model, string x, string z, string angle)
+  public static AddFurnitureMessage Create(int id, string model, string x, string z, string angle)
   {
     AddFurnitureMessage message = new AddFurnitureMessage();
     message.data = new Furniture();
@@ -73,7 +73,7 @@ public class DeleteFurnitureMessage
   public string type = "deleteFurniture";
   public JustId data;
 
-  public static DeleteFurnitureMessage Create(string id)
+  public static DeleteFurnitureMessage Create(int id)
   {
     DeleteFurnitureMessage message = new DeleteFurnitureMessage();
     message.data = new JustId();
@@ -88,7 +88,7 @@ public class UpdateFurnitureMessage
   public string type = "updateFurniture";
   public Furniture data;
 
-  public static UpdateFurnitureMessage Create(string id, string model, string x, string z, string angle)
+  public static UpdateFurnitureMessage Create(int id, string model, string x, string z, string angle)
   {
     UpdateFurnitureMessage message = new UpdateFurnitureMessage();
     message.data = new Furniture();
@@ -104,7 +104,7 @@ public class MarkFurnitureMessage
   public string type = "markFurniture";
   public JustId data;
 
-  public static MarkFurnitureMessage Create(string id)
+  public static MarkFurnitureMessage Create(int id)
   {
     MarkFurnitureMessage message = new MarkFurnitureMessage();
     message.data = new JustId();
@@ -119,7 +119,7 @@ public class UnMarkFurnitureMessage
   public string type = "unmarkFurniture";
   public JustId data;
 
-  public static UnMarkFurnitureMessage Create(string id)
+  public static UnMarkFurnitureMessage Create(int id)
   {
     UnMarkFurnitureMessage message = new UnMarkFurnitureMessage();
     message.data = new JustId();

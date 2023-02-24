@@ -6,7 +6,7 @@ public class DeepLinkManager : MonoBehaviour
 {
   private static DeepLinkManager instance;
   public string serverUrl;
-  public float FOV;
+  // public float FOV;
   private void Awake()
   {
     if (instance == null)
@@ -19,8 +19,8 @@ public class DeepLinkManager : MonoBehaviour
       }
       else
       {
-        serverUrl = "ws://192.168.101.2:5656";
-        FOV = 80;
+        serverUrl = "ws://10.10.10.52:7799/device1";
+        // FOV = 80;
       }
       DontDestroyOnLoad(gameObject);
     }
@@ -46,6 +46,6 @@ public class DeepLinkManager : MonoBehaviour
       paramsDict.Add(paramArr[0], UnityWebRequest.UnEscapeURL(paramArr[1]));
     }
     serverUrl = paramsDict["serverUrl"] ?? "ws://192.168.101.2:5656";
-    FOV = float.Parse(paramsDict["FOV"] ?? "80");
+    // FOV = float.Parse(paramsDict["FOV"] ?? "80");
   }
 }

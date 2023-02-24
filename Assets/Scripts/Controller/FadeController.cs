@@ -5,7 +5,7 @@ public class FadeController : MonoBehaviour
 {
   private static Renderer fadeRenderer;
   private static Color fadeColor;
-  public const float fadeTime = 1.0f;
+  public const float fadeTime = 0.5f;
 
   void Awake()
   {

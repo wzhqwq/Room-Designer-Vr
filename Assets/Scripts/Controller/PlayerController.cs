@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public enum PlayerMode
 {
   Steady,
@@ -22,7 +21,7 @@ public class PlayerController : MonoBehaviour
     if (mode == PlayerMode.Free)
     {
       // 通过Camera Offset矫正相机角度
-      activePlayer.transform.GetChild(0).rotation = Quaternion.Euler(0, correctionAngle, 0);
+      activePlayer.transform.GetChild(0).rotation = Quaternion.Euler(0, -correctionAngle, 0);
     }
   }
 
@@ -41,12 +40,13 @@ public class PlayerController : MonoBehaviour
       case PlayerMode.Correction:
         if (startingPoint == null)
         {
-          startingPoint = new Vector2(x, z);
+          startingPoint = new Vector2(z, x);
         }
-        else {
-          float length = (startingPoint - new Vector2(x, z))?.magnitude ?? 0;
+        else
+        {
+          float length = (startingPoint - new Vector2(z, x))?.magnitude ?? 0;
           position.z = length;
-          correctionAngle = Mathf.Atan2(z - startingPoint.Value.y, x - startingPoint.Value.x) * Mathf.Rad2Deg;
+          correctionAngle = Mathf.Atan2(z - startingPoint.Value.x, x - startingPoint.Value.y) * Mathf.Rad2Deg;
         }
         break;
       case PlayerMode.Free:

@@ -8,7 +8,9 @@ using System.Threading;
 public class WsManager : Singleton<WsManager>
 {
   private WebSocket ws;
-  private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
+  private Thread wsThread;
+  private ConcurrentQueue<string> receiveQueue = new();
+  private ConcurrentQueue<string> sendQueue = new();
   void Start()
   {
     LinkStart();
@@ -17,7 +19,7 @@ public class WsManager : Singleton<WsManager>
   void Update()
   {
     if (ws == null) LinkStart();
-    if (messageQueue.TryDequeue(out string message))
+    if (receiveQueue.TryDequeue(out string message))
     {
       switch (message)
       {
@@ -31,7 +33,7 @@ public class WsManager : Singleton<WsManager>
           StartCoroutine(OnClose());
           break;
         default:
-          OnMessage(message);
+          HandleMessage(message);
           break;
       }
     }
@@ -51,33 +53,40 @@ public class WsManager : Singleton<WsManager>
     ws.OnOpen += (sender, e) =>
     {
       Debug.Log("WebSocket Open");
-      messageQueue.Enqueue("OPEN");
+      receiveQueue.Enqueue("OPEN");
     };
     ws.OnMessage += (sender, e) =>
     {
-      messageQueue.Enqueue(e.Data);
+      receiveQueue.Enqueue(e.Data);
     };
     ws.OnError += (sender, e) =>
     {
       Debug.Log("WebSocket Error Message: " + e.Message);
-      messageQueue.Enqueue("ERROR");
+      receiveQueue.Enqueue("ERROR");
     };
     ws.OnClose += (sender, e) =>
     {
       Debug.Log("WebSocket Close");
-      messageQueue.Enqueue("CLOSED");
+      receiveQueue.Enqueue("CLOSED");
     };
     // WebSocketSharp会不负责任地在当前线程建立TCP连接，如果连不上服务器，会卡死主线程
     // 所以这里用一个新线程来建立连接
-    Thread thread = new Thread(() =>
+    wsThread = new Thread(() =>
     {
       ws.Connect();
+      while (true)
+        if (sendQueue.TryDequeue(out string messageToSend))
+        {
+          Debug.Log("send: " + messageToSend);
+          ws.Send(messageToSend);
+        }
     });
-    thread.Start();
+    wsThread.Start();
   }
 
-  private void OnMessage(string message)
+  private void HandleMessage(string message)
   {
+    Debug.Log("receive: " + message);
     GenericWsMessage parsed = JsonUtility.FromJson<GenericWsMessage>(message);
 
     switch (parsed.type)
@@ -118,6 +127,8 @@ public class WsManager : Singleton<WsManager>
       yield return SceneTransitionManager.GetInstance().LoadSceneCoroutine("StartUpScene");
     else
       yield return new WaitForSeconds(1);
+    wsThread.Abort();
+    wsThread = null;
     ws = null;
   }
 
@@ -132,22 +143,23 @@ public class WsManager : Singleton<WsManager>
     SceneTransitionManager.GetInstance().LoadScene("CorrectionScene");
   }
 
-  public void Mark(string id)
+  public void Mark(int id)
   {
-    if (ws == null || !ws.IsAlive) return;
+    if (ws == null) return;
     MarkFurnitureMessage message = MarkFurnitureMessage.Create(id);
-    ws.Send(JsonUtility.ToJson(message));
+    sendQueue.Enqueue(JsonUtility.ToJson(message));
   }
-  public void UnMark(string id)
+  public void UnMark(int id)
   {
-    if (ws == null || !ws.IsAlive) return;
+    if (ws == null) return;
     UnMarkFurnitureMessage message = UnMarkFurnitureMessage.Create(id);
-    ws.Send(JsonUtility.ToJson(message));
+    sendQueue.Enqueue(JsonUtility.ToJson(message));
   }
   public void ListFurniture()
   {
-    if (ws == null || !ws.IsAlive) return;
+    if (ws == null) return;
     ListFurnitureMessage message = ListFurnitureMessage.Create();
-    ws.Send(JsonUtility.ToJson(message));
+    Debug.Log("enqueue");
+    sendQueue.Enqueue(JsonUtility.ToJson(message));
   }
 }

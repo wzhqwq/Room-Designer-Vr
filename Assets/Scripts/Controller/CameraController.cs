@@ -5,8 +5,6 @@ public class CameraController : MonoBehaviour
 {
   private const float _maxDistance = 10;
   private GameObject _gazedAtObject = null;
-  private bool FOVSet = false;
-
   private IEnumerator gazeTimer = null;
   private MeshRenderer indicatorRenderer;
 
@@ -20,10 +18,6 @@ public class CameraController : MonoBehaviour
 
   void Update()
   {
-    if (!FOVSet && DeepLinkManager.GetInstance().FOV != 0) {
-      Camera.main.fieldOfView = DeepLinkManager.GetInstance().FOV;
-      FOVSet = true;
-    }
     GameObject hitObject;
     if (TryHit(out hitObject))
     {
@@ -67,8 +61,8 @@ public class CameraController : MonoBehaviour
     RaycastHit hit;
     if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
     {
-      hitObject = hit.transform.parent.gameObject;
-      return hitObject.tag == "Operable";
+      hitObject = hit.transform.parent?.gameObject;
+      return hitObject?.tag == "Operable";
     }
     else
     {

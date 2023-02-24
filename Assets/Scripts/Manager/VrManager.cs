@@ -1,6 +1,7 @@
 using Google.XR.Cardboard;
 using UnityEngine;
 using System;
+using UnityEngine.XR;
 
 public class VrManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class VrManager : MonoBehaviour
   public void Start()
   {
 #if !UNITY_EDITOR
+    // XRDevice.fovZoomFactor = 1.2f;
     Screen.sleepTimeout = SleepTimeout.NeverSleep;
     Screen.brightness = 1.0f;
     Api.SaveDeviceParams(deviceParams);

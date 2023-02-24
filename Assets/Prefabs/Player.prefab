@@ -51,8 +51,8 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1566590960290847036}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -161,8 +161,8 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4462018985648293127}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -250,7 +250,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8756794216623019702}
-  - component: {fileID: 8756794216623019705}
   - component: {fileID: 8756794216623019704}
   - component: {fileID: 7458463946518430509}
   - component: {fileID: 6588784127361763800}
@@ -277,23 +276,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8756794216623019705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8756794216623019707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2483b9bd782f9449a5972b61b7d51a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CameraFloorOffsetObject: {fileID: 8756794215587494644}
-  m_RequestedTrackingMode: 0
-  m_TrackingOriginMode: 1
-  m_TrackingSpace: 0
-  m_CameraYOffset: 1.7
 --- !u!114 &8756794216623019704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,7 +328,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8756794217252879946}
   - component: {fileID: 8756794217252879949}
-  - component: {fileID: 8756794217252879948}
   - component: {fileID: 8756794217252879944}
   - component: {fileID: 8756794217252879947}
   m_Layer: 0
@@ -398,7 +379,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 80
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -416,14 +397,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &8756794217252879948
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8756794217252879951}
-  m_Enabled: 1
 --- !u!114 &8756794217252879944
 MonoBehaviour:
   m_ObjectHideFlags: 0

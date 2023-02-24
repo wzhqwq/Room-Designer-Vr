@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class FurnitureController : OperableController
 {
@@ -7,6 +8,7 @@ public class FurnitureController : OperableController
   private bool focused = false;
   private MeshRenderer selectionRenderer;
   private Furniture furniture;
+  private const float animatingTime = 0.5f;
 
   void Awake()
   {
@@ -15,6 +17,11 @@ public class FurnitureController : OperableController
     selectionRenderer.material = ResourceManager.normalMaterial;
     selectionRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     selectionRenderer.receiveShadows = false;
+  }
+
+  void Start()
+  {
+    StartCoroutine(Drop());
   }
 
   override public void OnPointerEnter()
@@ -97,6 +104,36 @@ public class FurnitureController : OperableController
     else
     {
       selectionRenderer.material = ResourceManager.normalMaterial;
+    }
+  }
+
+  public void OnRemove()
+  {
+    StartCoroutine(Remove());
+  }
+  private IEnumerator Remove()
+  {
+    float timer = 0.0f;
+    while (timer < animatingTime)
+    {
+      float t = timer / animatingTime;
+      transform.localScale = new Vector3(1 - t, 1 - t, 1 - t);
+      transform.localPosition = new Vector3(0, t, 0);
+      timer += Time.deltaTime;
+      yield return null;
+    }
+    Destroy(gameObject);
+  }
+  private IEnumerator Drop()
+  {
+    float timer = 0.0f;
+    while (timer < animatingTime)
+    {
+      float t = timer / animatingTime;
+      transform.localScale = new Vector3(t, t, t);
+      transform.localPosition = new Vector3(0, 1 - t, 0);
+      timer += Time.deltaTime;
+      yield return null;
     }
   }
 }
