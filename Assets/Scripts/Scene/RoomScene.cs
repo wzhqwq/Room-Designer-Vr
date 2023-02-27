@@ -67,7 +67,7 @@ public class RoomScene : MonoBehaviour
     GameObject parent = activeInstance.gameObject;
     GameObject child = GetWrappedFurniture(name);
 
-    child.transform.parent = parent.transform;
+    child.transform.SetParent(parent.transform);
     child.name = "F_" + furniture.id;
     child.AddComponent<FurnitureController>();
     child.GetComponent<FurnitureController>().UpdateFurniture(furniture);

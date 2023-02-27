@@ -19,7 +19,7 @@ public class DeepLinkManager : MonoBehaviour
       }
       else
       {
-        serverUrl = "ws://10.10.10.52:7799/device1";
+        serverUrl = "ws://10.10.10.56:7799/device1";
         // FOV = 80;
       }
       DontDestroyOnLoad(gameObject);

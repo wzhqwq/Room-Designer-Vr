@@ -15,24 +15,34 @@ public class PlayerController : MonoBehaviour
 
   [SerializeField]
   private PlayerMode mode = PlayerMode.Steady;
+  private Vector3 positionNow = new Vector3(0, 0, 0);
 
   void Awake()
   {
     if (mode == PlayerMode.Free)
     {
       // 通过Camera Offset矫正相机角度
-      activePlayer.transform.GetChild(0).rotation = Quaternion.Euler(0, -correctionAngle, 0);
+      transform.GetChild(0).rotation = Quaternion.Euler(0, -correctionAngle, 0);
     }
   }
 
-  public static void UpdatePlayer()
+  void Update()
   {
-    activePlayer = FindObjectOfType<PlayerController>();
+    transform.position = positionNow;
+  }
+
+  void Start()
+  {
+    activePlayer = GetComponent<PlayerController>();
+  }
+  void OnDestroy()
+  {
+    if (activePlayer == this)
+      activePlayer = null;
   }
 
   public void UpdateLocation(float x, float z)
   {
-    Vector3 position = transform.position;
     switch (mode)
     {
       case PlayerMode.Steady:
@@ -45,16 +55,15 @@ public class PlayerController : MonoBehaviour
         else
         {
           float length = (startingPoint - new Vector2(z, x))?.magnitude ?? 0;
-          position.z = length;
-          correctionAngle = Mathf.Atan2(z - startingPoint.Value.x, x - startingPoint.Value.y) * Mathf.Rad2Deg;
+          positionNow.z = length;
+          correctionAngle = Mathf.Atan2(x - startingPoint.Value.y, z - startingPoint.Value.x) * Mathf.Rad2Deg;
         }
         break;
       case PlayerMode.Free:
-        position.x = x;
-        position.z = z;
+        positionNow.x = x;
+        positionNow.z = z;
         break;
     }
-    transform.position = position;
   }
 
   void OnCollisionEnter(Collision collision)
@@ -65,14 +74,18 @@ public class PlayerController : MonoBehaviour
 
   public static void UpdatePlayerLocation(float x, float z)
   {
+    if (activePlayer == null) return;
     activePlayer.UpdateLocation(x, z);
   }
   public static void ClearStartingPoint()
   {
+    if (activePlayer == null) return;
     activePlayer.startingPoint = null;
+    activePlayer.positionNow = new Vector3(0, 0, 0);
   }
   public static void StopCorrection()
   {
+    if (activePlayer == null) return;
     activePlayer.mode = PlayerMode.Steady;
   }
 }

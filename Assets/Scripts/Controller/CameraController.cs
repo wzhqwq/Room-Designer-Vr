@@ -7,13 +7,12 @@ public class CameraController : MonoBehaviour
   private GameObject _gazedAtObject = null;
   private IEnumerator gazeTimer = null;
   private MeshRenderer indicatorRenderer;
+  private Transform indicatorTransform;
 
   void Awake() {
-    indicatorRenderer = GameObject.Find("Indicator").GetComponent<MeshRenderer>();
-  }
-
-  void Start() {
-    PlayerController.UpdatePlayer();
+    GameObject indicator = GameObject.Find("Indicator");
+    indicatorRenderer = indicator.GetComponent<MeshRenderer>();
+    indicatorTransform = indicator.transform;
   }
 
   void Update()
@@ -50,7 +49,7 @@ public class CameraController : MonoBehaviour
       }
       StopGazeTimer();
       if (_gazedAtObject != null)
-        _gazedAtObject.SendMessage("OnPointerClick");
+        PointerClick(_gazedAtObject);
       else
         RoomScene.UnselectFurniture();
     }
@@ -61,6 +60,8 @@ public class CameraController : MonoBehaviour
     RaycastHit hit;
     if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
     {
+      hitObject = hit.transform.gameObject;
+      if (hitObject.tag == "Operable") return true;
       hitObject = hit.transform.parent?.gameObject;
       return hitObject?.tag == "Operable";
     }
@@ -93,7 +94,7 @@ public class CameraController : MonoBehaviour
       yield return null;
     }
 
-    if (gameObject != null) gameObject.SendMessage("OnPointerClick");
+    if (gameObject != null) PointerClick(gameObject);
     indicatorRenderer.material = ResourceManager.indicatorNormal;
     gazeTimer = null;
   }
@@ -104,5 +105,29 @@ public class CameraController : MonoBehaviour
     StopCoroutine(gazeTimer);
     gazeTimer = null;
     indicatorRenderer.material = ResourceManager.indicatorNormal;
+  }
+  private void PointerClick(GameObject clickObject)
+  {
+    clickObject.SendMessage("OnPointerClick");
+    StartCoroutine(ClickAnimation());
+  }
+  private IEnumerator ClickAnimation()
+  {
+    float timer = 0;
+    Vector3 originScale = indicatorTransform.localScale;
+    while (timer < 0.2f)
+    {
+      timer += Time.deltaTime;
+      indicatorTransform.localScale = Vector3.Lerp(originScale, originScale * 0.5f, timer / 0.2f);
+      yield return null;
+    }
+    timer = 0;
+    while (timer < 0.2f)
+    {
+      timer += Time.deltaTime;
+      indicatorTransform.localScale = Vector3.Lerp(originScale * 0.5f, originScale, timer / 0.2f);
+      yield return null;
+    }
+    indicatorTransform.localScale = originScale;
   }
 }

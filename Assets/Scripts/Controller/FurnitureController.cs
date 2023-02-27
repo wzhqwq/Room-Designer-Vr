@@ -8,7 +8,7 @@ public class FurnitureController : OperableController
   private bool focused = false;
   private MeshRenderer selectionRenderer;
   private Furniture furniture;
-  private const float animatingTime = 0.5f;
+  private const float animatingTime = 0.2f;
 
   void Awake()
   {
@@ -49,12 +49,12 @@ public class FurnitureController : OperableController
   {
     this.furniture = furniture;
     transform.localPosition = new Vector3(furniture.x, 0, furniture.z);
-    transform.localRotation = Quaternion.Euler(0, furniture.rotation, 0);
-    if (marked != furniture.marked)
-    {
-      if (furniture.marked) Mark();
-      else UnMark();
-    }
+    transform.localEulerAngles = new Vector3(0, furniture.rotation, 0);
+    // if (marked != furniture.marked)
+    // {
+    //   if (furniture.marked) Mark();
+    //   else UnMark();
+    // }
   }
   
   public bool IsMarked()
@@ -114,11 +114,13 @@ public class FurnitureController : OperableController
   private IEnumerator Remove()
   {
     float timer = 0.0f;
+    float x = transform.localPosition.x;
+    float z = transform.localPosition.z;
     while (timer < animatingTime)
     {
       float t = timer / animatingTime;
       transform.localScale = new Vector3(1 - t, 1 - t, 1 - t);
-      transform.localPosition = new Vector3(0, t, 0);
+      transform.localPosition = new Vector3(x, t, z);
       timer += Time.deltaTime;
       yield return null;
     }
@@ -127,13 +129,17 @@ public class FurnitureController : OperableController
   private IEnumerator Drop()
   {
     float timer = 0.0f;
+    float x = transform.localPosition.x;
+    float z = transform.localPosition.z;
     while (timer < animatingTime)
     {
       float t = timer / animatingTime;
       transform.localScale = new Vector3(t, t, t);
-      transform.localPosition = new Vector3(0, 1 - t, 0);
+      transform.localPosition = new Vector3(x, 1 - t, z);
       timer += Time.deltaTime;
       yield return null;
     }
+    transform.localScale = new Vector3(1, 1, 1);
+    transform.localPosition = new Vector3(x, 0, z);
   }
 }

@@ -4,12 +4,20 @@ using WebSocketSharp;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Threading;
+using System;
+
+[Serializable]
+public struct MessageWithType
+{
+  public string type;
+  public string rawMessage;
+}
 
 public class WsManager : Singleton<WsManager>
 {
   private WebSocket ws;
   private Thread wsThread;
-  private ConcurrentQueue<string> receiveQueue = new();
+  private ConcurrentQueue<MessageWithType> receiveQueue = new();
   private ConcurrentQueue<string> sendQueue = new();
   void Start()
   {
@@ -19,9 +27,9 @@ public class WsManager : Singleton<WsManager>
   void Update()
   {
     if (ws == null) LinkStart();
-    if (receiveQueue.TryDequeue(out string message))
+    if (receiveQueue.TryDequeue(out MessageWithType message))
     {
-      switch (message)
+      switch (message.type)
       {
         case "OPEN":
           OnOpen();
@@ -53,21 +61,31 @@ public class WsManager : Singleton<WsManager>
     ws.OnOpen += (sender, e) =>
     {
       Debug.Log("WebSocket Open");
-      receiveQueue.Enqueue("OPEN");
+      receiveQueue.Enqueue(new MessageWithType { type = "OPEN" });
     };
     ws.OnMessage += (sender, e) =>
     {
-      receiveQueue.Enqueue(e.Data);
+      string message = e.Data;
+      // Debug.Log("receive: " + message);
+      GenericWsMessage parsed = JsonUtility.FromJson<GenericWsMessage>(message);
+      if (parsed.type == null) return;
+      if (parsed.type == MessageType.LOCATION)
+      {
+        LocationMessage locationMessage = JsonUtility.FromJson<LocationMessage>(message);
+        PlayerController.UpdatePlayerLocation(locationMessage.data.x, locationMessage.data.z);
+        return;
+      }
+      receiveQueue.Enqueue(new MessageWithType { type = parsed.type, rawMessage = message });
     };
     ws.OnError += (sender, e) =>
     {
       Debug.Log("WebSocket Error Message: " + e.Message);
-      receiveQueue.Enqueue("ERROR");
+      receiveQueue.Enqueue(new MessageWithType { type = "ERROR" });
     };
     ws.OnClose += (sender, e) =>
     {
       Debug.Log("WebSocket Close");
-      receiveQueue.Enqueue("CLOSED");
+      receiveQueue.Enqueue(new MessageWithType { type = "CLOSED" });
     };
     // WebSocketSharp会不负责任地在当前线程建立TCP连接，如果连不上服务器，会卡死主线程
     // 所以这里用一个新线程来建立连接
@@ -84,19 +102,12 @@ public class WsManager : Singleton<WsManager>
     wsThread.Start();
   }
 
-  private void HandleMessage(string message)
+  private void HandleMessage(MessageWithType message)
   {
-    Debug.Log("receive: " + message);
-    GenericWsMessage parsed = JsonUtility.FromJson<GenericWsMessage>(message);
-
-    switch (parsed.type)
+    switch (message.type)
     {
-      case MessageType.LOCATION:
-        LocationMessage locationMessage = JsonUtility.FromJson<LocationMessage>(message);
-        PlayerController.UpdatePlayerLocation(locationMessage.data.x, locationMessage.data.z);
-        break;
       case MessageType.FURNITURE_LIST:
-        FurnitureListMessage furnitureListMessage = JsonUtility.FromJson<FurnitureListMessage>(message);
+        FurnitureListMessage furnitureListMessage = JsonUtility.FromJson<FurnitureListMessage>(message.rawMessage);
         RoomScene.ClearFurniture();
         foreach (Furniture furniture in furnitureListMessage.data)
         {
@@ -104,19 +115,19 @@ public class WsManager : Singleton<WsManager>
         }
         break;
       case MessageType.ADD_FURNITURE:
-        AddFurnitureMessage addFurnitureMessage = JsonUtility.FromJson<AddFurnitureMessage>(message);
+        AddFurnitureMessage addFurnitureMessage = JsonUtility.FromJson<AddFurnitureMessage>(message.rawMessage);
         RoomScene.AddFurniture(addFurnitureMessage.data);
         break;
       case MessageType.DELETE_FURNITURE:
-        DeleteFurnitureMessage deleteFurnitureMessage = JsonUtility.FromJson<DeleteFurnitureMessage>(message);
+        DeleteFurnitureMessage deleteFurnitureMessage = JsonUtility.FromJson<DeleteFurnitureMessage>(message.rawMessage);
         RoomScene.RemoveFurniture(deleteFurnitureMessage.data.id);
         break;
       case MessageType.UPDATE_FURNITURE:
-        UpdateFurnitureMessage updateFurnitureMessage = JsonUtility.FromJson<UpdateFurnitureMessage>(message);
+        UpdateFurnitureMessage updateFurnitureMessage = JsonUtility.FromJson<UpdateFurnitureMessage>(message.rawMessage);
         RoomScene.UpdateFurniture(updateFurnitureMessage.data);
         break;
       default:
-        OperationResultMessage operationResultMessage = JsonUtility.FromJson<OperationResultMessage>(message);
+        OperationResultMessage operationResultMessage = JsonUtility.FromJson<OperationResultMessage>(message.rawMessage);
         break;
     }
   }
@@ -159,7 +170,6 @@ public class WsManager : Singleton<WsManager>
   {
     if (ws == null) return;
     ListFurnitureMessage message = ListFurnitureMessage.Create();
-    Debug.Log("enqueue");
     sendQueue.Enqueue(JsonUtility.ToJson(message));
   }
 }
